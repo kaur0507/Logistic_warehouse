@@ -1,4 +1,3 @@
-
 $optimal_distance = Float::INFINITY
 $optimal_path = []
 $DISTANCE = [[0, 0, 0, 0, 0, 258, 0, 0, 0, 0, 0, 0, 220, 272, 361, 0], 
@@ -169,50 +168,3 @@ class MyGraph
     end
   end
 end
-
-number_of_vertices = 16
-g = MyGraph.new(number_of_vertices)
-g.add_edge(0, 5)
-g.add_edge(0, 12)
-g.add_edge(0, 13)
-g.add_edge(0, 14)
-g.add_edge(1, 2)
-g.add_edge(1, 8)
-g.add_edge(1, 10)
-g.add_edge(1, 11)
-g.add_edge(2, 4)
-g.add_edge(2, 8)
-g.add_edge(2, 10)
-g.add_edge(3, 5)
-g.add_edge(3, 6)
-g.add_edge(3, 7)
-g.add_edge(3, 14)
-g.add_edge(4, 10)
-g.add_edge(4, 13)
-g.add_edge(4, 15)
-g.add_edge(5, 7)
-g.add_edge(5, 10)
-g.add_edge(5, 13)
-g.add_edge(5, 14)
-g.add_edge(6, 7)
-g.add_edge(6, 9)
-g.add_edge(7, 8)
-g.add_edge(7, 9)
-g.add_edge(7, 10)
-g.add_edge(8, 9)
-g.add_edge(8, 10)
-g.add_edge(8, 11)
-g.add_edge(9, 11)
-g.add_edge(10, 13)
-g.add_edge(12, 13)
-g.add_edge(12, 15)
-g.add_edge(13, 15)
-
-g.find_cycle(number_of_vertices)
-
-$optimal_path.pop()
-magazine_number = rand(0...number_of_vertices)
-index_of_the_magazine_location = $optimal_path.index(magazine_number)
-$optimal_path = $optimal_path.rotate(index_of_the_magazine_location)
-$optimal_path.push($optimal_path[0])
-puts "Optimal distance is:", $optimal_distance, "Optimal path is:", $optimal_path
