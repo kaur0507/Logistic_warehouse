@@ -1,11 +1,7 @@
-# cities_in_order_of_graph = ["Szczecin", "Kraków", "Katowice", "Olsztyn", "Opole", "Bydgoszcz", "Białystok", "Warszawa", "Kielce", "Lublin", "Łódź", "Rzeszów", "Zielona Góra", "Poznań", "Gdańsk", "Wrocław"]
 
-
-class Graph
-
-  INFINITY = 1 << 64
-
-  DISTANCE = [[0, 0, 0, 0, 0, 258, 0, 0, 0, 0, 0, 0, 220, 272, 361, 0], 
+$optimal_distance = Float::INFINITY
+$optimal_path = []
+$DISTANCE = [[0, 0, 0, 0, 0, 258, 0, 0, 0, 0, 0, 0, 220, 272, 361, 0], 
             [0, 0, 80, 0, 0, 0, 0, 0, 161, 0, 205, 0, 0, 0, 0, 0], 
             [0, 80, 0, 0, 111, 0, 0, 0, 161, 0, 205, 0, 0, 0, 0, 0], 
             [0, 0, 0, 0, 0, 232, 239, 211, 0, 0, 0, 0, 0, 0, 181, 0], 
@@ -22,46 +18,201 @@ class Graph
             [361, 0, 0, 181, 0, 167, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
             [0, 0, 0, 0, 98, 0, 0, 0, 0, 0, 0, 0, 188, 182, 0, 0]]
 
-  def shortest_distance_between_cities(initial_value, matrix = DISTANCE)
-    distance = Array.new(matrix.size, INFINITY)
-    previous = Array.new(matrix.size, -1)
-
-    distance[initial_value] = 0
-
-    3.times { distance, previous = search_distance_between_cities(distance, previous, matrix) }
-    [distance, previous]
-  end
-
-  def search_distance_between_cities(distance, previous, matrix)
-    vertex = Array(0...matrix.size)
-    until vertex.empty?
-      u = vertex.shift
-      matrix[u].each_with_index do |val, i|
-        next if val.zero?
-
-        alt = distance[u] + val
-        if alt < distance[i]
-          distance[i] = alt
-          previous[i] = u
-        end
-      end
-    end
-    [distance, previous]
-  end
-
-  def find_the_shortest_path(beginning, last)
-
-    if beginning == last
-      return -1
-    end
-
-    path = shortest_distance_between_cities(beginning)[1]
-    previous = last
-    route = [last]
-    while previous != beginning
-      route << path[previous]
-      previous = path[previous]
-    end
-    route.reverse!
+class AjlistNode
+  # Define the accessor and reader of class AjlistNode
+  attr_accessor :id, :next
+  # Vertices node key
+  def initialize(value) 
+    # Set value of node key
+    @id = value
+    @next = nil
   end
 end
+
+class Vertices
+  # Define the accessor and reader of class Vertices
+  attr_accessor :data, :next 
+
+  def initialize(value) 
+    @data = value
+    @next = nil
+  end
+end
+
+class MyStack
+  # Define the accessor and reader of class MyStack
+  attr_accessor :element, :next
+
+  def initialize(element, top) 
+    self.element = element
+    self.next = top
+  end
+end
+
+class MyGraph
+  # Define the accessor and reader of class MyGraph
+  attr_accessor :size, :node, :top 
+  # number of Vertices
+  def initialize(size) 
+    # set value
+    self.size = size
+    self.top = nil
+    @node = Array.new(size, nil)
+    self.set_data()
+  end
+
+  # Set initial node value
+  def set_data() 
+    if @node == nil
+      puts("Empty graph")
+    else 
+      index = 0
+      while index < @size
+        @node[index] = Vertices.new(index)
+        index += 1
+      end
+    end
+  end
+
+  # Connect two nodes
+  def connect(start, last) 
+    new_edge = AjlistNode.new(last)
+    if @node[start].next == nil
+      @node[start].next = new_edge
+    else
+      temp = @node[start].next
+      while temp.next != nil
+        temp = temp.next
+      end
+      temp.next = new_edge
+    end
+  end
+
+  # Add edge of two nodes
+  def add_edge(start, last) 
+    if start >= 0 && start < @size && last >= 0 && last < @size && @node != nil
+      self.connect(start, last)
+      if start != last
+        self.connect(last, start)
+      end
+    else
+      puts("Something went wrong")
+    end
+  end
+
+  def push(element) 
+    new_node = MyStack.new(element, @top)
+    @top = new_node
+  end
+
+  def pop() 
+    if (@top != nil) 
+      @top = @top.next
+    end
+  end
+
+  # Path from source to destination
+  def path(temp)
+    if temp == nil
+      return
+    end
+    self.path(temp.next)
+    @@cycle_array.push(temp.element.to_int)
+  end
+
+  def show_cycle(start, last, visit, n, length) 
+    if start > @size || last > @size || start < 0 || last < 0 || @node == nil
+      return
+    end
+    if start == last && n == length
+      self.push(start)
+      @@cycle_array = []
+      distance = 0
+      self.path(@top)
+      self.pop()
+      # searching for optimal path
+      for i in (0...@@cycle_array.length-1) do
+        distance += $DISTANCE[@@cycle_array[i]][@@cycle_array[i+1]]
+      end
+      if distance < $optimal_distance
+        $optimal_distance = distance
+        $optimal_path = @@cycle_array
+      end
+    end
+    if visit[start] == true
+      # base case
+      return
+    else 
+      self.push(start)
+    end
+    visit[start] = true
+    temp = @node[start].next
+    while temp != nil
+      self.show_cycle(temp.id, last, visit, n, length + 1)
+      temp = temp.next
+    end
+    self.pop()
+    # reset the value of visited node
+    visit[start] = false
+  end
+
+  def find_cycle(n) 
+    if @node == nil
+      puts("Graph is Empty")
+    else 
+      visit = Array.new(@size, false)
+      i = 0
+      while i < @size
+        self.show_cycle(i, i, visit, n, 0)
+        i += 1
+      end
+    end
+  end
+end
+
+number_of_vertices = 16
+g = MyGraph.new(number_of_vertices)
+g.add_edge(0, 5)
+g.add_edge(0, 12)
+g.add_edge(0, 13)
+g.add_edge(0, 14)
+g.add_edge(1, 2)
+g.add_edge(1, 8)
+g.add_edge(1, 10)
+g.add_edge(1, 11)
+g.add_edge(2, 4)
+g.add_edge(2, 8)
+g.add_edge(2, 10)
+g.add_edge(3, 5)
+g.add_edge(3, 6)
+g.add_edge(3, 7)
+g.add_edge(3, 14)
+g.add_edge(4, 10)
+g.add_edge(4, 13)
+g.add_edge(4, 15)
+g.add_edge(5, 7)
+g.add_edge(5, 10)
+g.add_edge(5, 13)
+g.add_edge(5, 14)
+g.add_edge(6, 7)
+g.add_edge(6, 9)
+g.add_edge(7, 8)
+g.add_edge(7, 9)
+g.add_edge(7, 10)
+g.add_edge(8, 9)
+g.add_edge(8, 10)
+g.add_edge(8, 11)
+g.add_edge(9, 11)
+g.add_edge(10, 13)
+g.add_edge(12, 13)
+g.add_edge(12, 15)
+g.add_edge(13, 15)
+
+g.find_cycle(number_of_vertices)
+
+$optimal_path.pop()
+magazine_number = rand(0...number_of_vertices)
+index_of_the_magazine_location = $optimal_path.index(magazine_number)
+$optimal_path = $optimal_path.rotate(index_of_the_magazine_location)
+$optimal_path.push($optimal_path[0])
+puts "Optimal distance is:", $optimal_distance, "Optimal path is:", $optimal_path

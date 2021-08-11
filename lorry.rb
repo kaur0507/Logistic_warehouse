@@ -11,5 +11,4 @@ class Lorry < Vehicles
     @capacity = 12000 * amount_of_semitrailers # capacity of lorry in kg
   end
 
-
 end
