@@ -14,6 +14,6 @@ class Truck < Vehicles
 end
 
 
-truck = Truck.new
-puts truck.combustion
-puts truck.cost_of_whole_transit(200)
+# truck = Truck.new
+# puts truck.combustion
+# puts truck.cost_of_whole_transit(200)

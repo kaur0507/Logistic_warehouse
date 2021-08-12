@@ -11,4 +11,13 @@ class Package
     @value = rand(20..500) # random value from 20 to 500 in pln
   end
 
+  def weight
+    @weight
+  end
+  def destination
+    @destination
+  end
+  def value
+    @value
+  end
 end
