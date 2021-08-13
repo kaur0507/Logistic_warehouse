@@ -9,7 +9,6 @@ require './train.rb'
 require './warehouse.rb'
 
 def packages_array_creation(amount_of_packages, amount_of_magazines)
-
   packages_located_by_destination = Array.new(amount_of_magazines){Array.new(0)}
 
   for i in (0...amount_of_packages) do
@@ -20,7 +19,6 @@ def packages_array_creation(amount_of_packages, amount_of_magazines)
 end
 
 def the_best_path(amount_of_magazines, magazine_number)
-
   g = MyGraph.new(amount_of_magazines)
   g.add_edge(0, 5)
   g.add_edge(0, 12)
@@ -83,7 +81,6 @@ def weight_of_all_packages(list_of_packages, magazine_number)
 end
 
 def magazine_creation(list_of_packages)
-
   i = 0
   array_of_magazines = []
   list_of_packages.each do |packages| 
@@ -93,14 +90,31 @@ def magazine_creation(list_of_packages)
 
 end
 
-def magazine_packages_weight(magazine)
+def magazine_packages_data(magazine)
   weight = 0
   value = 0
   amount_of_packages = magazine.list_of_packages.length
   magazine.list_of_packages.each { |package| value += package.value; weight += package.weight}
-  print "In ", magazine.ordinal_number, " magazine, located in ", 
-    magazine.location, ", must be delivered ", amount_of_packages, " packages with total weight of ",
-    weight, " kg and total value of ", value, " zł\n"
+  print "To magazine located in ", magazine.location, ", has been delivered ", 
+    amount_of_packages, " packages with total weight of ", weight, "kg and total value of ", 
+    value, "zł.\n"
+    return weight
+end
+
+def transport(weight, path, distance, logistic)
+  amount_of_wagons = (weight.to_f / 15000).ceil
+
+  train = Train.new(amount_of_wagons)
+  i = 0
+  path.each do |number| 
+    if i == path.length-1
+      next
+    else
+      magazine_packages_data(logistic[number])
+      i += 1
+    end
+  end
+  print"Cost of the transit equals ", train.cost_of_whole_transit(distance), "zł.\n"
 end
 
 def main
@@ -115,18 +129,10 @@ def main
   only_distance = result_of_optimum_searching[0]
   only_path = result_of_optimum_searching[1]
 
-  weight_of_all_packages(array_of_packages, magazine_number)
+  whole_weight = weight_of_all_packages(array_of_packages, magazine_number)
 
   logistic = magazine_creation(array_of_packages)
-  i = 0
-  only_path.each do |number| 
-    if i == only_path.length-1
-      next
-    else
-      magazine_packages_weight(logistic[number])
-      i += 1
-    end
-  end
+  transport(whole_weight, only_path, only_distance, logistic)
 end
 
 main()

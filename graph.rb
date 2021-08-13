@@ -17,8 +17,8 @@ $DISTANCE = [[0, 0, 0, 0, 0, 258, 0, 0, 0, 0, 0, 0, 220, 272, 361, 0],
             [361, 0, 0, 181, 0, 167, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
             [0, 0, 0, 0, 98, 0, 0, 0, 0, 0, 0, 0, 188, 182, 0, 0]]
 
-class AjlistNode
-  # Define the accessor and reader of class AjlistNode
+class NodeList
+  # Define the accessor and reader of class NodeList
   attr_accessor :id, :next
   # Vertices node key
   def initialize(value) 
@@ -43,8 +43,8 @@ class MyStack
   attr_accessor :element, :next
 
   def initialize(element, top) 
-    self.element = element
-    self.next = top
+    @element = element
+    @next = top
   end
 end
 
@@ -54,10 +54,10 @@ class MyGraph
   # number of Vertices
   def initialize(size) 
     # set value
-    self.size = size
-    self.top = nil
+    @size = size
+    @top = nil
     @node = Array.new(size, nil)
-    self.set_data()
+    set_data()
   end
 
   # Set initial node value
@@ -75,7 +75,7 @@ class MyGraph
 
   # Connect two nodes
   def connect(start, last) 
-    new_edge = AjlistNode.new(last)
+    new_edge = NodeList.new(last)
     if @node[start].next == nil
       @node[start].next = new_edge
     else
@@ -90,9 +90,9 @@ class MyGraph
   # Add edge of two nodes
   def add_edge(start, last) 
     if start >= 0 && start < @size && last >= 0 && last < @size && @node != nil
-      self.connect(start, last)
+      connect(start, last)
       if start != last
-        self.connect(last, start)
+        connect(last, start)
       end
     else
       puts("Something went wrong")
@@ -115,7 +115,7 @@ class MyGraph
     if temp == nil
       return
     end
-    self.path(temp.next)
+    path(temp.next)
     @@cycle_array.push(temp.element.to_int)
   end
 
@@ -124,11 +124,11 @@ class MyGraph
       return
     end
     if start == last && n == length
-      self.push(start)
+      push(start)
       @@cycle_array = []
       distance = 0
-      self.path(@top)
-      self.pop()
+      path(@top)
+      pop()
       # searching for optimal path
       for i in (0...@@cycle_array.length-1) do
         distance += $DISTANCE[@@cycle_array[i]][@@cycle_array[i+1]]
@@ -142,27 +142,27 @@ class MyGraph
       # base case
       return
     else 
-      self.push(start)
+      push(start)
     end
     visit[start] = true
     temp = @node[start].next
     while temp != nil
-      self.show_cycle(temp.id, last, visit, n, length + 1)
+      show_cycle(temp.id, last, visit, n, length + 1)
       temp = temp.next
     end
-    self.pop()
+    pop()
     # reset the value of visited node
     visit[start] = false
   end
 
   def find_cycle(n) 
     if @node == nil
-      puts("Graph is Empty")
+      puts("Graph is empty")
     else 
       visit = Array.new(@size, false)
       i = 0
       while i < @size
-        self.show_cycle(i, i, visit, n, 0)
+        show_cycle(i, i, visit, n, 0)
         i += 1
       end
     end

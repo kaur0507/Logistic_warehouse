@@ -10,14 +10,4 @@ class Package
     @weight = rand(1..10) # random weight from 1 to 10 in kg
     @value = rand(20..500) # random value from 20 to 500 in pln
   end
-
-  def weight
-    @weight
-  end
-  def destination
-    @destination
-  end
-  def value
-    @value
-  end
 end
