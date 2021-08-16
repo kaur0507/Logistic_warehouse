@@ -18,7 +18,7 @@ $DISTANCE = [[0, 0, 0, 0, 0, 258, 0, 0, 0, 0, 0, 0, 220, 272, 361, 0],
             [0, 0, 0, 0, 98, 0, 0, 0, 0, 0, 0, 0, 188, 182, 0, 0]]
 
 class NodeList
-  # Define the accessor and reader of class NodeList
+  # Define the accessor of class NodeList
   attr_accessor :id, :next
   # Vertices node key
   def initialize(value) 
@@ -29,7 +29,7 @@ class NodeList
 end
 
 class Vertices
-  # Define the accessor and reader of class Vertices
+  # Define the accessor of class Vertices
   attr_accessor :data, :next 
 
   def initialize(value) 
@@ -39,7 +39,7 @@ class Vertices
 end
 
 class MyStack
-  # Define the accessor and reader of class MyStack
+  # Define the accessor of class MyStack
   attr_accessor :element, :next
 
   def initialize(element, top) 
@@ -49,7 +49,7 @@ class MyStack
 end
 
 class MyGraph
-  # Define the accessor and reader of class MyGraph
+  # Define the accessor of class MyGraph
   attr_accessor :size, :node, :top 
   # number of Vertices
   def initialize(size) 
